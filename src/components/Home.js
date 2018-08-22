@@ -10,23 +10,12 @@ import { Link } from 'route-lite'
 import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'
 import Typography from '@material-ui/core/Typography'
-import Icon from '@material-ui/core/Icon'
-import Button from '@material-ui/core/Button'
-import Grid from '@material-ui/core/Grid'
-import BottomNavigation from '@material-ui/core/BottomNavigation'
-import BottomNavigationAction from '@material-ui/core/BottomNavigationAction'
-import RestoreIcon from '@material-ui/icons/Restore'
-import FavoriteIcon from '@material-ui/icons/Favorite'
-import LocationOnIcon from '@material-ui/icons/LocationOn'
+import PropTypes from 'prop-types'
 
 const RootDiv = styled.div`
   display: flex;
   flex-direction: column;
   height: 600px;
-`
-
-const NonGrowAppBar = styled(AppBar)`
-  flexgrow: 0;
 `
 
 const GrowDiv = styled.div`
@@ -38,6 +27,10 @@ const BottomDiv = styled.div`
   flex-basis: 50;
   display: flex;
   flex-direction: row;
+`
+
+const NonGrowAppBar = styled(AppBar)`
+  flexgrow: 0;
 `
 
 const MenuButton = styled(IconButton)`
@@ -61,6 +54,8 @@ const GreenAvatar = styled(Avatar)`
 
 class Home extends Component {
   render() {
+    const { liquid, cpuStaked, netStaked, ramStaked, onGoToTransfer, onGoToHistory } = this.props
+
     return (
       <RootDiv>
         <NonGrowAppBar position="static" color="default">
@@ -78,7 +73,12 @@ class Home extends Component {
           </Toolbar>
         </NonGrowAppBar>
 
-        <GrowDiv>Lorem</GrowDiv>
+        <GrowDiv>
+          <div>{liquid}</div>
+          <div>{cpuStaked}</div>
+          <div>{netStaked}</div>
+          <div>{ramStaked}</div>
+        </GrowDiv>
 
         <BottomDiv>
           <GrowDiv>
@@ -99,6 +99,28 @@ class Home extends Component {
       </RootDiv>
     )
   }
+}
+
+Home.propTypes = {
+  liquid: PropTypes.number,
+  cpuStaked: PropTypes.number,
+  netStaked: PropTypes.number,
+  ramStaked: PropTypes.number,
+  updateLiquid: PropTypes.func,
+  updateCpuStaked: PropTypes.func,
+  updateNetStaked: PropTypes.func,
+  updateRamStaked: PropTypes.func
+}
+
+Home.defaultProps = {
+  liquid: 0,
+  cpuStaked: 0,
+  netStaked: 0,
+  ramStaked: 0,
+  updateLiquid: () => console.warn('updateLiquid not defined'),
+  updateCpuStaked: () => console.warn('updateCpuStaked not defined'),
+  updateNetStaked: () => console.warn('updateNetStaked not defined'),
+  updateRamStaked: () => console.warn('updateRamStaked not defined')
 }
 
 export default Home
