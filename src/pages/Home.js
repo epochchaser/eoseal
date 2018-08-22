@@ -19,9 +19,30 @@ import RestoreIcon from '@material-ui/icons/Restore'
 import FavoriteIcon from '@material-ui/icons/Favorite'
 import LocationOnIcon from '@material-ui/icons/LocationOn'
 
+const RootDiv = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 600px;
+`
+
+const NonGrowAppBar = styled(AppBar)`
+  flexgrow: 0;
+`
+
+const GrowDiv = styled.div`
+  flex-grow: 1;
+`
+
+const BottomDiv = styled.div`
+  flex-grow: 0;
+  flex-basis: 50;
+  display: flex;
+  flex-direction: row;
+`
+
 const MenuButton = styled(IconButton)`
-  marginLeft: -12,
-  marginRight: 20
+  marginleft: -12;
+  marginright: 20;
 `
 
 const Title = styled(Typography)`
@@ -33,16 +54,16 @@ const TransferIcon = styled(IconButton)`
 `
 
 const GreenAvatar = styled(Avatar)`
-  margin: 10,
-  color: '#fff',
-  backgroundColor: green[500]
+  margin: 10;
+  color: '#fff';
+  backgroundcolor: green[500];
 `
 
 class Home extends Component {
   render() {
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', height: 600 }}>
-        <AppBar style={{ flexGrow: 0 }} position="static" color="default">
+      <RootDiv>
+        <NonGrowAppBar position="static" color="default">
           <Toolbar>
             <MenuButton color="inherit" aria-label="Menu">
               <MenuIcon />
@@ -55,27 +76,27 @@ class Home extends Component {
               <PersonIcon cursor="pointer" />
             </GreenAvatar>
           </Toolbar>
-        </AppBar>
+        </NonGrowAppBar>
 
-        <div style={{ flexGrow: 1 }}>Lorem</div>
+        <GrowDiv>Lorem</GrowDiv>
 
-        <div style={{ flexGrow: 0, flexBasis: 50, display: 'flex', flexDirection: 'row' }}>
-          <div style={{ flexGrow: 1 }}>
+        <BottomDiv>
+          <GrowDiv>
             <Link component={Transfer} componentProps={{ text: 'from HOME' }}>
               <TransferIcon>
                 <SendIcon cursor="pointer" />
               </TransferIcon>
             </Link>
-          </div>
-          <div style={{ flexGrow: 1 }}>
+          </GrowDiv>
+          <GrowDiv>
             <Link component={Transfer} componentProps={{ text: 'from HOME' }}>
               <TransferIcon>
                 <SendIcon cursor="pointer" />
               </TransferIcon>
             </Link>
-          </div>
-        </div>
-      </div>
+          </GrowDiv>
+        </BottomDiv>
+      </RootDiv>
     )
   }
 }
