@@ -18,7 +18,6 @@ const AccountInfo = (state = initialState, { type, payload, err }) => {
         ...payload
       }
 
-      console.log(hm)
       return hm
     case types.GET_ACCOUNT_INFO_FAILED:
       return {

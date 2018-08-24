@@ -5,7 +5,6 @@ import Button from '@material-ui/core/Button'
 import MenuIcon from '@material-ui/icons/Menu'
 import Avatar from '@material-ui/core/Avatar'
 import styled from 'styled-components'
-import Transfer from './Transfer'
 import React, { Component, Fragment } from 'react'
 import { Link } from 'route-lite'
 import AppBar from '@material-ui/core/AppBar'
@@ -14,6 +13,7 @@ import Typography from '@material-ui/core/Typography'
 import PropTypes from 'prop-types'
 import LiquidView from './Home/LiquidView'
 import StakedView from './Home/StakedView'
+import Transfer from './Transfer'
 
 const RootContainer = styled.div`
   display: flex;

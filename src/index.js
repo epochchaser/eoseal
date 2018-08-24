@@ -7,8 +7,6 @@ import createSagaMiddleware from 'redux-saga'
 import apiSaga from './sagas'
 import { Provider } from 'react-redux'
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles'
-import blue from '@material-ui/core/colors/blue'
-import lightBlue from '@material-ui/core/colors/lightBlue'
 
 const sagaMiddleware = createSagaMiddleware()
 const store = createStore(
