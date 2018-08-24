@@ -1,17 +1,13 @@
 import * as types from './ActionTypes'
 
-export const updateLiquid = liquid => {
-  return { type: types.UPDATE_LIQUID, liquid }
+export const getAccountInfo = () => {
+  return { type: types.GET_ACCOUNT_INFO }
 }
 
-export const updateCpuStaked = cpuStaked => {
-  return { type: types.UPDATE_CPU_STAKED, cpuStaked }
+export const getAccountInfoSuccess = accountInfo => {
+  return { type: types.GET_ACCOUNT_INFO_SUCCESS, payload: accountInfo }
 }
 
-export const updateRamStaked = ramStaked => {
-  return { type: types.UPDATE_RAM_STAKED, ramStaked }
-}
-
-export const updateNetStaked = netStaked => {
-  return { type: types.UPDATE_NET_STAKED, netStaked }
+export const getAccountInfoFailed = err => {
+  return { type: types.GET_ACCOUNT_INFO_FAILED, payload: err }
 }

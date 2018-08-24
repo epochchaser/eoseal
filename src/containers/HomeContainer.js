@@ -4,18 +4,18 @@ import { connect } from 'react-redux'
 
 const mapStateToProps = state => {
   return {
-    liquid: state.liquid,
-    cpuStaked: state.cpuStaked,
-    netStaked: state.netStaked,
-    ramStaked: state.ramStaked
+    liquid: state.accountInfo.liquid,
+    totalBalance: state.accountInfo.totalBalance,
+    cpu_staked: state.accountInfo.cpu_staked,
+    cpu_usage: state.accountInfo.cpu_usage,
+    net_staked: state.accountInfo.net_staked,
+    net_usage: state.accountInfo.net_usage,
+    ram_usage: state.accountInfo.ram_usage
   }
 }
 
 const mapDispatchToProps = dispatch => ({
-  updateLiquid: () => dispatch(actions.updateLiquid(0)),
-  updateCpuStaked: () => dispatch(actions.updateCpuStaked(0)),
-  updateNetStaked: () => dispatch(actions.updateNetStaked(0)),
-  updateRamStaked: () => dispatch(actions.updateRamStaked(0))
+  getAccountInfo: () => dispatch(actions.getAccountInfo())
 })
 
 const HomeContainer = connect(

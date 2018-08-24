@@ -1,32 +1,35 @@
 import SendIcon from '@material-ui/icons/Send'
 import PersonIcon from '@material-ui/icons/Person'
 import IconButton from '@material-ui/core/IconButton'
+import Button from '@material-ui/core/Button'
 import MenuIcon from '@material-ui/icons/Menu'
 import Avatar from '@material-ui/core/Avatar'
 import styled from 'styled-components'
 import Transfer from './Transfer'
-import React, { Component } from 'react'
+import React, { Component, Fragment } from 'react'
 import { Link } from 'route-lite'
 import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'
 import Typography from '@material-ui/core/Typography'
 import PropTypes from 'prop-types'
+import LiquidView from './Home/LiquidView'
+import StakedView from './Home/StakedView'
 
-const RootDiv = styled.div`
+const RootContainer = styled.div`
   display: flex;
   flex-direction: column;
-  height: 600px;
+  height: 100%;
 `
 
-const GrowDiv = styled.div`
-  flex-grow: 1;
+const AtomView = styled.div`
+  text-align: center;
 `
 
-const BottomDiv = styled.div`
-  flex-grow: 0;
-  flex-basis: 50;
+const ResourceContainer = styled.div`
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
+  flex-grow: 1;
+  justify-content: space-around;
 `
 
 const NonGrowAppBar = styled(AppBar)`
@@ -42,10 +45,6 @@ const Title = styled(Typography)`
   flex: 1;
 `
 
-const TransferIcon = styled(IconButton)`
-  margin: theme.spacing.unit;
-`
-
 const GreenAvatar = styled(Avatar)`
   margin: 10;
   color: '#fff';
@@ -53,11 +52,23 @@ const GreenAvatar = styled(Avatar)`
 `
 
 class Home extends Component {
+  componentDidMount = () => {
+    const { getAccountInfo } = this.props
+    getAccountInfo()
+  }
   render() {
-    const { liquid, cpuStaked, netStaked, ramStaked, onGoToTransfer, onGoToHistory } = this.props
+    const {
+      liquid,
+      totalBalance,
+      cpu_staked,
+      cpu_usage,
+      net_staked,
+      net_usage,
+      ram_usage
+    } = this.props
 
     return (
-      <RootDiv>
+      <RootContainer>
         <NonGrowAppBar position="static" color="default">
           <Toolbar>
             <MenuButton color="inherit" aria-label="Menu">
@@ -73,54 +84,54 @@ class Home extends Component {
           </Toolbar>
         </NonGrowAppBar>
 
-        <GrowDiv>
-          <div>{liquid}</div>
-          <div>{cpuStaked}</div>
-          <div>{netStaked}</div>
-          <div>{ramStaked}</div>
-        </GrowDiv>
+        <ResourceContainer>
+          <AtomView>
+            <LiquidView liquid={liquid} totalBalance={totalBalance} />
+          </AtomView>
 
-        <BottomDiv>
-          <GrowDiv>
-            <Link component={Transfer} componentProps={{ text: 'from HOME' }}>
-              <TransferIcon>
-                <SendIcon cursor="pointer" />
-              </TransferIcon>
-            </Link>
-          </GrowDiv>
-          <GrowDiv>
-            <Link component={Transfer} componentProps={{ text: 'from HOME' }}>
-              <TransferIcon>
-                <SendIcon cursor="pointer" />
-              </TransferIcon>
-            </Link>
-          </GrowDiv>
-        </BottomDiv>
-      </RootDiv>
+          <StakedView
+            cpu_staked={cpu_staked}
+            cpu_usage={cpu_usage}
+            net_staked={net_staked}
+            net_usage={net_usage}
+            ram_usage={ram_usage}
+          />
+        </ResourceContainer>
+
+        <Link component={Transfer} componentProps={{ text: 'from HOME' }}>
+          <Button
+            variant="fab"
+            color="primary"
+            style={{ position: 'fixed', left: 'auto', right: 20, bottom: 20 }}
+          >
+            <SendIcon />
+          </Button>
+        </Link>
+      </RootContainer>
     )
   }
 }
 
 Home.propTypes = {
   liquid: PropTypes.number,
-  cpuStaked: PropTypes.number,
-  netStaked: PropTypes.number,
-  ramStaked: PropTypes.number,
-  updateLiquid: PropTypes.func,
-  updateCpuStaked: PropTypes.func,
-  updateNetStaked: PropTypes.func,
-  updateRamStaked: PropTypes.func
+  totalBalance: PropTypes.number,
+  cpu_staked: PropTypes.number,
+  cpu_usage: PropTypes.number,
+  net_staked: PropTypes.number,
+  net_usage: PropTypes.number,
+  ram_usage: PropTypes.number,
+  getAccountInfo: PropTypes.func
 }
 
 Home.defaultProps = {
   liquid: 0,
-  cpuStaked: 0,
-  netStaked: 0,
-  ramStaked: 0,
-  updateLiquid: () => console.warn('updateLiquid not defined'),
-  updateCpuStaked: () => console.warn('updateCpuStaked not defined'),
-  updateNetStaked: () => console.warn('updateNetStaked not defined'),
-  updateRamStaked: () => console.warn('updateRamStaked not defined')
+  totalBalance: 0,
+  cpu_staked: 0,
+  cpu_usage: 0,
+  net_staked: 0,
+  net_usage: 0,
+  ram_usage: 0,
+  getAccountInfo: () => console.warn('getAccountInfo not defined')
 }
 
 export default Home
