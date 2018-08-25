@@ -13,12 +13,10 @@ const initialState = {
 const AccountInfo = (state = initialState, { type, payload, err }) => {
   switch (type) {
     case types.GET_ACCOUNT_INFO_SUCCESS:
-      const hm = {
+      return {
         ...state,
         ...payload
       }
-
-      return hm
     case types.GET_ACCOUNT_INFO_FAILED:
       return {
         ...state,

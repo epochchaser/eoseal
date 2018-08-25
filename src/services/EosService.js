@@ -14,7 +14,9 @@ class EosService {
 
     this.eos = Eos({
       httpEndpoint: endPoint,
-      chainId: Values.NETWORK.chainId
+      chainId: Values.NETWORK.chainId,
+      sign: true,
+      broadcast: true
     })
 
     this.accountName = 'gu3dqmzvhege'
@@ -41,7 +43,39 @@ class EosService {
       return
     }
 
-    return this.eos.getAccount(accountName)
+    return this.eos.getAccount({ account_name: accountName })
+  }
+
+  getCurrencyBalance = query => {
+    if (!this.eos) {
+      return
+    }
+
+    let balance = this.eos.getCurrencyBalance(query)
+
+    return balance
+  }
+
+  getActions = (accountName, pos, offset) => {
+    if (!this.eos) {
+      return
+    }
+
+    let actions = this.eos.getActions({
+      account_name: accountName,
+      pos,
+      offset
+    })
+
+    return actions
+  }
+
+  createTransactionWithContract = (contract, cb) => {
+    if (!this.eos) {
+      return
+    }
+
+    return this.eos.transaction(contract, cb)
   }
 }
 

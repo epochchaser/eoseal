@@ -1,4 +1,7 @@
 export const ACCOUNT_NAME_PATTERN = /([a-z1-5]){12,}/
+export const HOME_PAGE_INDEX = 0
+export const TRANSFER_PAGE_INDEX = 1
+export const ACTION_PER_PAGE = 1000
 
 const protocol = 'https'
 const host = 'eos.greymass.com'

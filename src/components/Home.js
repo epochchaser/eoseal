@@ -6,7 +6,6 @@ import MenuIcon from '@material-ui/icons/Menu'
 import Avatar from '@material-ui/core/Avatar'
 import styled from 'styled-components'
 import React, { Component, Fragment } from 'react'
-import { Link } from 'route-lite'
 import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'
 import Typography from '@material-ui/core/Typography'
@@ -14,12 +13,8 @@ import PropTypes from 'prop-types'
 import LiquidView from './Home/LiquidView'
 import StakedView from './Home/StakedView'
 import Transfer from './Transfer'
-
-const RootContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-`
+import posed from 'react-pose'
+import * as values from '../constants/Values'
 
 const AtomView = styled.div`
   text-align: center;
@@ -51,11 +46,25 @@ const GreenAvatar = styled(Avatar)`
   backgroundcolor: green[500];
 `
 
+const HomeRoot = styled(
+  posed.div({
+    active: { opacity: 1 },
+    inActive: {
+      opacity: 0.4
+    }
+  })
+)`
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+`
+
 class Home extends Component {
   componentDidMount = () => {
     const { getAccountInfo } = this.props
     getAccountInfo()
   }
+
   render() {
     const {
       liquid,
@@ -64,50 +73,65 @@ class Home extends Component {
       cpu_usage,
       net_staked,
       net_usage,
-      ram_usage
+      ram_usage,
+      pageIndex,
+      tokens,
+      showTransferView,
+      closeTransferView,
+      getTokens,
+      transferTokens
     } = this.props
 
     return (
-      <RootContainer>
-        <NonGrowAppBar position="static" color="default">
-          <Toolbar>
-            <MenuButton color="inherit" aria-label="Menu">
-              <MenuIcon />
-            </MenuButton>
-            <Title variant="title" color="inherit">
-              Eoseal
-            </Title>
+      <Fragment>
+        <HomeRoot pose={pageIndex === 0 ? 'active' : 'inActive'}>
+          <NonGrowAppBar position="static" color="default">
+            <Toolbar>
+              <MenuButton color="inherit" aria-label="Menu">
+                <MenuIcon />
+              </MenuButton>
+              <Title variant="title" color="inherit">
+                Eoseal
+              </Title>
 
-            <GreenAvatar>
-              <PersonIcon cursor="pointer" />
-            </GreenAvatar>
-          </Toolbar>
-        </NonGrowAppBar>
+              <GreenAvatar>
+                <PersonIcon cursor="pointer" />
+              </GreenAvatar>
+            </Toolbar>
+          </NonGrowAppBar>
 
-        <ResourceContainer>
-          <AtomView>
-            <LiquidView liquid={liquid} totalBalance={totalBalance} />
-          </AtomView>
+          <ResourceContainer>
+            <AtomView>
+              <LiquidView liquid={liquid} totalBalance={totalBalance} />
+            </AtomView>
 
-          <StakedView
-            cpu_staked={cpu_staked}
-            cpu_usage={cpu_usage}
-            net_staked={net_staked}
-            net_usage={net_usage}
-            ram_usage={ram_usage}
-          />
-        </ResourceContainer>
+            <StakedView
+              cpu_staked={cpu_staked}
+              cpu_usage={cpu_usage}
+              net_staked={net_staked}
+              net_usage={net_usage}
+              ram_usage={ram_usage}
+            />
+          </ResourceContainer>
 
-        <Link component={Transfer} componentProps={{ text: 'from HOME' }}>
           <Button
             variant="fab"
             color="primary"
             style={{ position: 'fixed', left: 'auto', right: 20, bottom: 20 }}
+            onClick={showTransferView}
           >
             <SendIcon />
           </Button>
-        </Link>
-      </RootContainer>
+        </HomeRoot>
+
+        <Transfer
+          show={pageIndex === values.TRANSFER_PAGE_INDEX ? 'visible' : 'collapse'}
+          tokens={tokens}
+          getTokens={getTokens}
+          transferTokens={transferTokens}
+          closeTransferView={closeTransferView}
+        />
+      </Fragment>
     )
   }
 }
@@ -120,7 +144,12 @@ Home.propTypes = {
   net_staked: PropTypes.number,
   net_usage: PropTypes.number,
   ram_usage: PropTypes.number,
-  getAccountInfo: PropTypes.func
+  pageIndex: PropTypes.number,
+  tokens: PropTypes.array,
+  getAccountInfo: PropTypes.func,
+  showTransferView: PropTypes.func,
+  closeTransferView: PropTypes.func,
+  getTokens: PropTypes.func
 }
 
 Home.defaultProps = {
@@ -131,7 +160,12 @@ Home.defaultProps = {
   net_staked: 0,
   net_usage: 0,
   ram_usage: 0,
-  getAccountInfo: () => console.warn('getAccountInfo not defined')
+  pageIndex: 0,
+  tokens: [],
+  getAccountInfo: () => console.warn('getAccountInfo not defined'),
+  showTransferView: () => console.warn('showTransferView not defined'),
+  closeTransferView: () => console.warn('closeTransferView not defined'),
+  getTokens: () => console.warn('getTokens not defined')
 }
 
 export default Home
