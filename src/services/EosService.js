@@ -1,6 +1,3 @@
-import * as Values from '../constants/Values'
-import Eos from 'eosjs'
-
 const singleton = Symbol()
 const singletonEosService = Symbol()
 
@@ -9,17 +6,6 @@ class EosService {
     if (eosService !== singletonEosService) {
       throw new Error('Cannot construct singleton')
     }
-
-    let endPoint = Values.NETWORK.protocol + '://' + Values.NETWORK.host + ':' + Values.NETWORK.port
-
-    this.eos = Eos({
-      httpEndpoint: endPoint,
-      chainId: Values.NETWORK.chainId,
-      sign: true,
-      broadcast: true
-    })
-
-    this.accountName = 'gu3dqmzvhege'
   }
 
   static get instance() {
@@ -30,38 +16,38 @@ class EosService {
     return this[singleton]
   }
 
-  getInfo = () => {
-    if (!this.eos) {
+  getKeyAccounts = (eos, pubKey) => {
+    if (!eos) {
       return
     }
 
-    return this.eos.getInfo({})
+    return eos.getKeyAccounts({ public_key: pubKey })
   }
 
-  getAccountInfo = accountName => {
-    if (!this.eos) {
+  getAccountInfo = (eos, accountName) => {
+    if (!eos) {
       return
     }
 
-    return this.eos.getAccount({ account_name: accountName })
+    return eos.getAccount({ account_name: accountName })
   }
 
-  getCurrencyBalance = query => {
-    if (!this.eos) {
+  getCurrencyBalance = (eos, query) => {
+    if (!eos) {
       return
     }
 
-    let balance = this.eos.getCurrencyBalance(query)
+    let balance = eos.getCurrencyBalance(query)
 
     return balance
   }
 
-  getActions = (accountName, pos, offset) => {
-    if (!this.eos) {
+  getActions = (eos, accountName, pos, offset) => {
+    if (!eos) {
       return
     }
 
-    let actions = this.eos.getActions({
+    let actions = eos.getActions({
       account_name: accountName,
       pos,
       offset
@@ -70,12 +56,12 @@ class EosService {
     return actions
   }
 
-  createTransactionWithContract = (contract, cb) => {
-    if (!this.eos) {
+  createTransactionWithContract = (eos, contract, cb) => {
+    if (!eos) {
       return
     }
 
-    return this.eos.transaction(contract, cb)
+    return eos.transaction(contract, cb)
   }
 }
 

@@ -5,7 +5,6 @@ import posed from 'react-pose'
 import Card from '@material-ui/core/Card'
 import CardActions from '@material-ui/core/CardActions'
 import CardContent from '@material-ui/core/CardContent'
-import CardMedia from '@material-ui/core/CardMedia'
 import Button from '@material-ui/core/Button'
 import Typography from '@material-ui/core/Typography'
 import Paper from '@material-ui/core/Paper'
@@ -17,7 +16,8 @@ import SendIcon from '@material-ui/icons/Send'
 import CancelIcon from '@material-ui/icons/Cancel'
 import Snackbar from '@material-ui/core/Snackbar'
 import CircularProgress from '@material-ui/core/CircularProgress'
-import EosService from '../services/EosService'
+import * as EosPortal from '../utils/EosPortal'
+import Swal from 'sweetalert2'
 
 const Trans = styled(
   posed.div({
@@ -48,12 +48,30 @@ class Transfer extends Component {
     openSnackbar: false,
     vertical: 'top',
     horizontal: 'right',
-    message: ''
+    message: '',
+    transferInProgress: false
   }
 
   componentDidMount = () => {
-    const { getTokens } = this.props
-    getTokens()
+    const {
+      getTokens,
+      accountName,
+      httpEndpoint,
+      keyProvider,
+      chainId,
+      sign,
+      broadcast
+    } = this.props
+
+    const eos = EosPortal.getEOS({
+      httpEndpoint,
+      keyProvider,
+      chainId,
+      sign,
+      broadcast
+    })
+
+    getTokens({ eos, accountName })
   }
 
   handleCancelTransfer = () => {
@@ -69,7 +87,16 @@ class Transfer extends Component {
 
   handleTransfer = () => {
     const { recipient, token, amount, memo } = this.state
-    const { tokens, transferTokens } = this.props
+    const {
+      tokens,
+      transferTokens,
+      accountName,
+      httpEndpoint,
+      keyProvider,
+      chainId,
+      sign,
+      broadcast
+    } = this.props
 
     if (!recipient) {
       this.setState({
@@ -87,10 +114,22 @@ class Transfer extends Component {
         openSnackbar: true
       })
     } else {
+      this.setState({
+        transferInProgress: true
+      })
+
       const targetToken = tokens.filter(t => t.symbol === token)[0]
-      const accountName = EosService.accountName
+
+      const eos = EosPortal.getEOS({
+        httpEndpoint,
+        keyProvider,
+        chainId,
+        sign,
+        broadcast
+      })
 
       transferTokens({
+        eos,
         contract: targetToken.code,
         authority: 'active',
         fromAccountName: accountName,
@@ -98,13 +137,46 @@ class Transfer extends Component {
         symbol: targetToken.symbol,
         quantity: amount,
         memo,
-        handleTransferSuccess: this.handleTransferSuccess
+        handleTransferCompleted: this.handleTransferCompleted
       })
     }
   }
 
-  handleTransferSuccess = () => {
-    alert('성공')
+  handleTransferCompleted = isSuccess => {
+    this.setState({
+      transferInProgress: false
+    })
+
+    if (isSuccess) {
+      Swal('Good job!', 'Your transaction(s) have been submitted to the blockchain.', 'success')
+      const {
+        closeTransferView,
+        refreshAccountInfo,
+        accountName,
+        httpEndpoint,
+        keyProvider,
+        chainId,
+        sign,
+        broadcast
+      } = this.props
+      closeTransferView()
+
+      const eos = EosPortal.getEOS({
+        httpEndpoint,
+        keyProvider,
+        chainId,
+        sign,
+        broadcast
+      })
+
+      refreshAccountInfo({ eos, accountName })
+    } else {
+      Swal({
+        type: 'error',
+        title: 'Oops...',
+        text: 'Your transaction(s) have been failed.'
+      })
+    }
   }
 
   handleCloseSnackbar = () => {
@@ -113,7 +185,16 @@ class Transfer extends Component {
 
   render() {
     const { show, tokens, closeTransferView } = this.props
-    const { vertical, horizontal, openSnackbar, message, recipient, token, amount } = this.state
+    const {
+      vertical,
+      horizontal,
+      openSnackbar,
+      message,
+      recipient,
+      token,
+      amount,
+      transferInProgress
+    } = this.state
 
     return (
       <Trans pose={show}>
@@ -183,23 +264,31 @@ class Transfer extends Component {
                   justifyContent: 'space-between'
                 }}
               >
-                <Button
-                  style={{ marginLeft: '16px', marginBottom: '16px' }}
-                  variant="fab"
-                  color="secondary"
-                  onClick={closeTransferView}
-                >
-                  <CancelIcon />
-                </Button>
+                {transferInProgress ? (
+                  <div />
+                ) : (
+                  <Button
+                    style={{ marginLeft: '16px', marginBottom: '16px' }}
+                    variant="fab"
+                    color="secondary"
+                    onClick={closeTransferView}
+                  >
+                    <CancelIcon />
+                  </Button>
+                )}
 
-                <Button
-                  style={{ marginRight: '16px', marginBottom: '16px' }}
-                  variant="fab"
-                  color="primary"
-                  onClick={this.handleTransfer}
-                >
-                  <SendIcon />
-                </Button>
+                {transferInProgress ? (
+                  <CircularProgress style={{ marginRight: '16px', marginBottom: '16px' }} />
+                ) : (
+                  <Button
+                    style={{ marginRight: '16px', marginBottom: '16px' }}
+                    variant="fab"
+                    color="primary"
+                    onClick={this.handleTransfer}
+                  >
+                    <SendIcon />
+                  </Button>
+                )}
               </CardActions>
             </Card>
           ) : (

@@ -1,5 +1,4 @@
 import * as types from '../actions/ActionTypes'
-import * as values from '../constants/Values'
 
 const initialState = {
   contract: '',
@@ -11,7 +10,7 @@ const initialState = {
   memo: ''
 }
 
-const TransferToken = (state = initialState, { type, payload, err }) => {
+const TransferToken = (state = initialState, { type, err }) => {
   switch (type) {
     case types.TRANSFER_TOKENS_SUCCESS:
       return {

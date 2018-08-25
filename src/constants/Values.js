@@ -7,6 +7,7 @@ const protocol = 'https'
 const host = 'eos.greymass.com'
 const port = 443
 const chainId = 'aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906'
+export const httpEndpoint = `${protocol}://${host}:${port}`
 
 export const requiredFields = {
   accounts: [

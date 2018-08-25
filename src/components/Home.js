@@ -15,6 +15,8 @@ import StakedView from './Home/StakedView'
 import Transfer from './Transfer'
 import posed from 'react-pose'
 import * as values from '../constants/Values'
+import * as EosPortal from '../utils/EosPortal'
+import ecc from 'eosjs-ecc'
 
 const AtomView = styled.div`
   text-align: center;
@@ -61,12 +63,24 @@ const HomeRoot = styled(
 
 class Home extends Component {
   componentDidMount = () => {
-    const { getAccountInfo } = this.props
-    getAccountInfo()
+    const { getAccountInfo, httpEndpoint, keyProvider, chainId, sign, broadcast } = this.props
+
+    if (!keyProvider) return
+    const publicKey = ecc.privateToPublic(keyProvider)
+    const eos = EosPortal.getEOS({
+      httpEndpoint,
+      keyProvider,
+      chainId,
+      sign,
+      broadcast
+    })
+
+    getAccountInfo({ eos, publicKey })
   }
 
   render() {
     const {
+      accountName,
       liquid,
       totalBalance,
       cpu_staked,
@@ -75,11 +89,17 @@ class Home extends Component {
       net_usage,
       ram_usage,
       pageIndex,
+      httpEndpoint,
+      keyProvider,
+      chainId,
+      sign,
+      broadcast,
       tokens,
       showTransferView,
       closeTransferView,
       getTokens,
-      transferTokens
+      transferTokens,
+      refreshAccountInfo
     } = this.props
 
     return (
@@ -103,6 +123,15 @@ class Home extends Component {
           <ResourceContainer>
             <AtomView>
               <LiquidView liquid={liquid} totalBalance={totalBalance} />
+
+              <Typography
+                style={{ paddingTop: '16px' }}
+                gutterBottom
+                variant="subheading"
+                component="h2"
+              >
+                {accountName ? accountName : 'ANONYMOUS'}
+              </Typography>
             </AtomView>
 
             <StakedView
@@ -116,6 +145,7 @@ class Home extends Component {
 
           <Button
             variant="fab"
+            disabled={accountName ? false : true}
             color="primary"
             style={{ position: 'fixed', left: 'auto', right: 20, bottom: 20 }}
             onClick={showTransferView}
@@ -124,13 +154,23 @@ class Home extends Component {
           </Button>
         </HomeRoot>
 
-        <Transfer
-          show={pageIndex === values.TRANSFER_PAGE_INDEX ? 'visible' : 'collapse'}
-          tokens={tokens}
-          getTokens={getTokens}
-          transferTokens={transferTokens}
-          closeTransferView={closeTransferView}
-        />
+        {accountName &&
+          tokens && (
+            <Transfer
+              show={pageIndex === values.TRANSFER_PAGE_INDEX ? 'visible' : 'collapse'}
+              tokens={tokens}
+              getTokens={getTokens}
+              transferTokens={transferTokens}
+              closeTransferView={closeTransferView}
+              refreshAccountInfo={refreshAccountInfo}
+              accountName={accountName}
+              httpEndpoint={httpEndpoint}
+              keyProvider={keyProvider}
+              chainId={chainId}
+              sign={sign}
+              broadcast={broadcast}
+            />
+          )}
       </Fragment>
     )
   }
@@ -144,8 +184,14 @@ Home.propTypes = {
   net_staked: PropTypes.number,
   net_usage: PropTypes.number,
   ram_usage: PropTypes.number,
+  accountName: PropTypes.string,
   pageIndex: PropTypes.number,
   tokens: PropTypes.array,
+  httpEndpoint: PropTypes.string,
+  keyProvider: PropTypes.string,
+  chainId: PropTypes.string,
+  sign: PropTypes.bool,
+  broadcast: PropTypes.bool,
   getAccountInfo: PropTypes.func,
   showTransferView: PropTypes.func,
   closeTransferView: PropTypes.func,
@@ -160,8 +206,14 @@ Home.defaultProps = {
   net_staked: 0,
   net_usage: 0,
   ram_usage: 0,
+  accountName: '',
   pageIndex: 0,
   tokens: [],
+  httpEndpoint: '',
+  keyProvider: '',
+  chainId: '',
+  sign: false,
+  broadcast: false,
   getAccountInfo: () => console.warn('getAccountInfo not defined'),
   showTransferView: () => console.warn('showTransferView not defined'),
   closeTransferView: () => console.warn('closeTransferView not defined'),

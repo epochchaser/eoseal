@@ -14,10 +14,17 @@ function removeDuplicates(arr, prop) {
   return newArr
 }
 
-function* fetchAccountInfo() {
+function* fetchAccountInfo(payload) {
   try {
-    const accountName = EosService.accountName
-    const accountInfo = yield call(EosService.getAccountInfo, accountName)
+    const { eos, publicKey } = payload.payload
+
+    const accounts = yield call(EosService.getKeyAccounts, eos, publicKey)
+    if (!accounts.account_names || accounts.account_names.length <= 0) {
+      return
+    }
+
+    const accountName = accounts.account_names[0]
+    const accountInfo = yield call(EosService.getAccountInfo, eos, accountName)
 
     if (accountInfo) {
       let liquid = accountInfo.core_liquid_balance
@@ -65,7 +72,8 @@ function* fetchAccountInfo() {
           cpu_usage,
           net_staked,
           net_usage,
-          ram_usage
+          ram_usage,
+          accountName
         })
       )
     }
@@ -74,10 +82,73 @@ function* fetchAccountInfo() {
   }
 }
 
-function* fetchTokens() {
+function* refreshAccountInfo(payload) {
   try {
-    const accountName = EosService.accountName
-    const lastAction = yield call(EosService.getActions, accountName, -1, -1)
+    const { eos, accountName } = payload.payload
+
+    const accountInfo = yield call(EosService.getAccountInfo, eos, accountName)
+
+    if (accountInfo) {
+      let liquid = accountInfo.core_liquid_balance
+        ? Number(accountInfo.core_liquid_balance.split(' ')[0])
+        : 0
+
+      liquid = Number(liquid.toFixed(2))
+      const cpu_max = Number(accountInfo.cpu_limit.max / 10000)
+      const net_max = Number(accountInfo.net_limit.max / 10000)
+      let refunding_cpu_amount = 0.0
+      let refunding_net_amount = 0.0
+
+      if (accountInfo.refund_request) {
+        refunding_cpu_amount = Number(accountInfo.refund_request.cpu_amount.split(' ')[0])
+        refunding_net_amount = Number(accountInfo.refund_request.net_amount.split(' ')[0])
+      }
+
+      const totalRefund = refunding_cpu_amount + refunding_net_amount
+      const cpu_staked = Number(
+        Number(accountInfo.total_resources.cpu_weight.split(' ')[0]).toFixed(2)
+      )
+      const net_staked = Number(
+        Number(accountInfo.total_resources.net_weight.split(' ')[0]).toFixed(2)
+      )
+      const cpu_user = 0
+      const net_user = 0
+
+      const staked = net_staked + cpu_staked
+      const totalBalance = Number((staked + totalRefund + liquid).toFixed(2))
+      const ram_usage = Number(
+        accountInfo.ram_usage > 0 ? (accountInfo.ram_usage / 1024).toFixed(2) : 0
+      )
+      const net_usage = Number(
+        accountInfo.net_limit.used > 0 ? (accountInfo.net_limit.used / 1024).toFixed(2) : 0
+      )
+      const cpu_usage = Number(
+        accountInfo.cpu_limit.used > 0 ? (accountInfo.cpu_limit.used / 1024).toFixed(2) : 0
+      )
+
+      yield put(
+        actions.getAccountInfoSuccess({
+          liquid,
+          totalBalance,
+          cpu_staked,
+          cpu_usage,
+          net_staked,
+          net_usage,
+          ram_usage,
+          accountName
+        })
+      )
+    }
+  } catch (error) {
+    yield put(actions.getAccountInfoFailed(error))
+  }
+}
+
+function* fetchTokens(payload) {
+  try {
+    const { eos, accountName } = payload.payload
+
+    const lastAction = yield call(EosService.getActions, eos, accountName, -1, -1)
 
     let totalActions
     let tokens = [
@@ -87,8 +158,7 @@ function* fetchTokens() {
         symbol: 'EOS'
       }
     ]
-
-    let eosToken = yield call(EosService.getCurrencyBalance, tokens[0])
+    let eosToken = yield call(EosService.getCurrencyBalance, eos, tokens[0])
     const tokenized = eosToken[0].split(' ')
     tokens[0].amount = Number(tokenized[0])
 
@@ -105,7 +175,7 @@ function* fetchTokens() {
         let pos = i * values.ACTION_PER_PAGE
         let offset = values.ACTION_PER_PAGE - 1
 
-        const actions = yield call(EosService.getActions, accountName, pos, offset)
+        const actions = yield call(EosService.getActions, eos, accountName, pos, offset)
 
         let results = actions.actions
           .filter((action, idx, array) => {
@@ -135,7 +205,7 @@ function* fetchTokens() {
 
       for (let i = 0; i < len; i++) {
         try {
-          let token = yield call(EosService.getCurrencyBalance, tempTokens[i])
+          let token = yield call(EosService.getCurrencyBalance, eos, tempTokens[i])
           const tokenized = token[0].split(' ')
           tempTokens.filter(t => t.symbol === tokenized[1])[0].amount = Number(tokenized[0])
         } catch (e) {}
@@ -179,19 +249,19 @@ function* closeTransferView() {
 }
 
 function* transferTokens(transferInfo) {
-  try {
-    const {
-      contract,
-      authority,
-      fromAccountName,
-      toAccountName,
-      symbol,
-      quantity,
-      memo,
-      handleTransferSuccess
-    } = transferInfo.payload
+  const {
+    eos,
+    contract,
+    authority,
+    fromAccountName,
+    toAccountName,
+    symbol,
+    quantity,
+    memo,
+    handleTransferCompleted
+  } = transferInfo.payload
 
-    console.log(transferInfo.payload)
+  try {
     const cb = tr => {
       const options = { authorization: [`${fromAccountName}@${authority}`] }
 
@@ -208,16 +278,18 @@ function* transferTokens(transferInfo) {
       )
     }
 
-    const result = yield call(EosService.createTransactionWithContract, contract, cb)
-    handleTransferSuccess()
+    const result = yield call(EosService.createTransactionWithContract, eos, contract, cb)
+    yield put(actions.transferTokensSuccess())
+    handleTransferCompleted(true)
   } catch (error) {
-    console.log(error)
     yield put(actions.transferTokensFailed(error))
+    handleTransferCompleted(false)
   }
 }
 
 function* apiSaga() {
   yield takeEvery(types.GET_ACCOUNT_INFO, fetchAccountInfo)
+  yield takeEvery(types.REFRESH_ACCOUNT_INFO, refreshAccountInfo)
   yield takeEvery(types.SHOW_TRANSFER_VIEW, showTransferView)
   yield takeEvery(types.CLOSE_TRANSFER_VIEW, closeTransferView)
   yield takeEvery(types.GET_TOKENS, fetchTokens)

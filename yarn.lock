@@ -2386,7 +2386,7 @@ eosjs-api@7.0.3:
     camel-case "^3.0.0"
     isomorphic-fetch "^2.2.1"
 
-eosjs-ecc@4.0.4:
+eosjs-ecc@4.0.4, eosjs-ecc@^4.0.4:
   version "4.0.4"
   resolved "https://registry.yarnpkg.com/eosjs-ecc/-/eosjs-ecc-4.0.4.tgz#431450f30a6f73088ff5d7ba1ebdfe967a5ca4ab"
   dependencies:
@@ -7039,6 +7039,10 @@ sw-toolbox@^3.4.0:
   dependencies:
     path-to-regexp "^1.0.1"
     serviceworker-cache-polyfill "^4.0.0"
+
+sweetalert2@^7.26.12:
+  version "7.26.12"
+  resolved "https://registry.yarnpkg.com/sweetalert2/-/sweetalert2-7.26.12.tgz#1a679de3ddc0eda3b5466bfbfd32733d640c2d63"
 
 symbol-observable@1.0.4:
   version "1.0.4"

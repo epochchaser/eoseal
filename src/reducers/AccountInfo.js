@@ -7,7 +7,8 @@ const initialState = {
   cpu_usage: 0,
   net_staked: 0,
   net_usage: 0,
-  ram_usage: 0
+  ram_usage: 0,
+  accountName: ''
 }
 
 const AccountInfo = (state = initialState, { type, payload, err }) => {
@@ -18,6 +19,19 @@ const AccountInfo = (state = initialState, { type, payload, err }) => {
         ...payload
       }
     case types.GET_ACCOUNT_INFO_FAILED:
+      return {
+        ...state,
+        showError: true,
+        err
+      }
+
+    case types.REFRESH_ACCOUNT_INFO_SUCCESS:
+      return {
+        ...state,
+        ...payload
+      }
+
+    case types.REFRESH_ACCOUNT_INFO_FAILED:
       return {
         ...state,
         showError: true,
