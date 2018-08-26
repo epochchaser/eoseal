@@ -33,6 +33,7 @@ const Trans = styled(
   width: 100%;
   position: fixed;
   display: flex;
+  background: white;
   justify-content: center;
   z-index: 1;
   top: 0;
@@ -41,7 +42,7 @@ const Trans = styled(
 
 class Transfer extends Component {
   state = {
-    token: '',
+    token: 'EOS',
     recipient: '',
     amount: 0,
     memo: '',

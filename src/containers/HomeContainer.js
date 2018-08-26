@@ -27,13 +27,17 @@ const mapDispatchToProps = dispatch => ({
   getAccountInfo: payload => dispatch(actions.getAccountInfo(payload)),
   refreshAccountInfo: payload => dispatch(actions.refreshAccountInfo(payload)),
   showTransferView: () => dispatch(actions.showTransferView()),
+  showRegisterStep: () => dispatch(actions.showRegisterStep()),
+  showLockScreen: () => dispatch(actions.showLockScreen()),
   closeTransferView: () => dispatch(actions.closeTransferView()),
+  closeRegisterStep: () => dispatch(actions.closeRegisterStep()),
+  closeLockScreen: () => dispatch(actions.closeLockScreen()),
   getTokens: payload => dispatch(actions.getTokens(payload)),
   transferTokens: transferInfo => {
     dispatch(actions.transferTokens(transferInfo))
   },
-  updateEosOptions: options => {
-    dispatch(actions.updateEosOptions(options))
+  updateEosProvider: options => {
+    dispatch(actions.updateEosProvider(options))
   }
 })
 

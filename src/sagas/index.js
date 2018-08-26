@@ -16,9 +16,9 @@ function removeDuplicates(arr, prop) {
 
 function* fetchAccountInfo(payload) {
   try {
-    const { eos, publicKey } = payload.payload
+    const { eos, public_key } = payload.payload
 
-    const accounts = yield call(EosService.getKeyAccounts, eos, publicKey)
+    const accounts = yield call(EosService.getKeyAccounts, eos, public_key)
     if (!accounts.account_names || accounts.account_names.length <= 0) {
       return
     }
@@ -236,6 +236,30 @@ function* showTransferView() {
   }
 }
 
+function* showRegisterStep() {
+  try {
+    yield put(
+      actions.showRegisterStepSuccess({
+        pageIndex: values.REGISTER_STEP_INDEX
+      })
+    )
+  } catch (error) {
+    yield put(actions.showRegisterStepFailed(error))
+  }
+}
+
+function* showLockScreen() {
+  try {
+    yield put(
+      actions.showLockScreenSuccess({
+        pageIndex: values.LOCK_SCREEN_INDEX
+      })
+    )
+  } catch (error) {
+    yield put(actions.showLockScreenFailed(error))
+  }
+}
+
 function* closeTransferView() {
   try {
     yield put(
@@ -245,6 +269,30 @@ function* closeTransferView() {
     )
   } catch (error) {
     yield put(actions.closeTransferViewFailed(error))
+  }
+}
+
+function* closeRegisterStep() {
+  try {
+    yield put(
+      actions.closeRegisterStepSuccess({
+        pageIndex: values.HOME_PAGE_INDEX
+      })
+    )
+  } catch (error) {
+    yield put(actions.closeRegisterStepFailed(error))
+  }
+}
+
+function* closeLockScreen() {
+  try {
+    yield put(
+      actions.closeLockScreenSuccess({
+        pageIndex: values.HOME_PAGE_INDEX
+      })
+    )
+  } catch (error) {
+    yield put(actions.closeLockScreenFailed(error))
   }
 }
 
@@ -287,13 +335,28 @@ function* transferTokens(transferInfo) {
   }
 }
 
+function* updateEosProvider(options) {
+  const { keyProvider } = options.payload
+
+  try {
+    yield put(actions.updateEosProviderSuccess({ keyProvider }))
+  } catch (error) {
+    yield put(actions.updateEosProviderFailed(error))
+  }
+}
+
 function* apiSaga() {
   yield takeEvery(types.GET_ACCOUNT_INFO, fetchAccountInfo)
   yield takeEvery(types.REFRESH_ACCOUNT_INFO, refreshAccountInfo)
   yield takeEvery(types.SHOW_TRANSFER_VIEW, showTransferView)
+  yield takeEvery(types.SHOW_REGISTER_STEP, showRegisterStep)
+  yield takeEvery(types.SHOW_LOCK_SCREEN, showLockScreen)
   yield takeEvery(types.CLOSE_TRANSFER_VIEW, closeTransferView)
+  yield takeEvery(types.CLOSE_REGISTER_STEP, closeRegisterStep)
+  yield takeEvery(types.CLOSE_LOCK_SCREEN, closeLockScreen)
   yield takeEvery(types.GET_TOKENS, fetchTokens)
   yield takeEvery(types.TRANSFER_TOKENS, transferTokens)
+  yield takeEvery(types.UPDATE_EOS_PROVIDER, updateEosProvider)
 }
 
 export default apiSaga

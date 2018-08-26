@@ -48,6 +48,54 @@ export const closeTransferViewFailed = err => {
   return { type: types.CLOSE_TRANSFER_VIEW_FAILED, payload: err }
 }
 
+export const showRegisterStep = () => {
+  return { type: types.SHOW_REGISTER_STEP }
+}
+
+export const showRegisterStepSuccess = pageInfo => {
+  return { type: types.SHOW_REGISTER_STEP_SUCCESS, payload: pageInfo }
+}
+
+export const showRegisterStepFailed = err => {
+  return { type: types.SHOW_REGISTER_STEP_FAILED, payload: err }
+}
+
+export const closeRegisterStep = () => {
+  return { type: types.CLOSE_REGISTER_STEP }
+}
+
+export const closeRegisterStepSuccess = pageInfo => {
+  return { type: types.CLOSE_REGISTER_STEP_SUCCESS, payload: pageInfo }
+}
+
+export const closeRegisterStepFailed = err => {
+  return { type: types.CLOSE_REGISTER_STEP_FAILED, payload: err }
+}
+
+export const showLockScreen = () => {
+  return { type: types.SHOW_LOCK_SCREEN }
+}
+
+export const showLockScreenSuccess = pageInfo => {
+  return { type: types.SHOW_LOCK_SCREEN_SUCCESS, payload: pageInfo }
+}
+
+export const showLockScreenFailed = err => {
+  return { type: types.SHOW_LOCK_SCREEN_FAILED, payload: err }
+}
+
+export const closeLockScreen = () => {
+  return { type: types.CLOSE_LOCK_SCREEN }
+}
+
+export const closeLockScreenSuccess = pageInfo => {
+  return { type: types.CLOSE_LOCK_SCREEN_SUCCESS, payload: pageInfo }
+}
+
+export const closeLockScreenFailed = err => {
+  return { type: types.CLOSE_LOCK_SCREEN_FAILED, payload: err }
+}
+
 export const getTokens = payload => {
   return { type: types.GET_TOKENS, payload }
 }
@@ -72,14 +120,14 @@ export const transferTokensFailed = err => {
   return { type: types.TRANSFER_TOKENS_FAILED, payload: err }
 }
 
-export const updateEosOptions = options => {
-  return { type: types.UPDATE_EOS_OPTIONS, payload: options }
+export const updateEosProvider = options => {
+  return { type: types.UPDATE_EOS_PROVIDER, payload: options }
 }
 
-export const updateEosOptionsSuccess = options => {
-  return { type: types.UPDATE_EOS_OPTIONS_SUCCESS, payload: options }
+export const updateEosProviderSuccess = options => {
+  return { type: types.UPDATE_EOS_PROVIDER_SUCCESS, payload: options }
 }
 
-export const updateEosOptionsFailed = err => {
-  return { type: types.UPDATE_EOS_OPTIONS_FAILED, payload: err }
+export const updateEosProviderFailed = err => {
+  return { type: types.UPDATE_EOS_PROVIDER_FAILED, payload: err }
 }

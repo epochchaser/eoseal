@@ -11,12 +11,12 @@ const initialState = {
 
 const ConfigInfo = (state = initialState, { type, payload, err }) => {
   switch (type) {
-    case types.UPDATE_EOS_OPTIONS_SUCCESS:
+    case types.UPDATE_EOS_PROVIDER_SUCCESS:
       return {
         ...state,
         ...payload
       }
-    case types.UPDATE_EOS_OPTIONS_FAILED:
+    case types.UPDATE_EOS_PROVIDER_FAILED:
       return {
         ...state,
         showError: true,

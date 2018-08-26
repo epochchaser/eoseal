@@ -32,6 +32,57 @@ const PageTransitionInfo = (state = initialState, { type, payload, err }) => {
         showError: true,
         err
       }
+    case types.SHOW_REGISTER_STEP_SUCCESS:
+      return {
+        ...state,
+        ...payload
+      }
+
+    case types.SHOW_REGISTER_STEP_FAILED:
+      return {
+        ...state,
+        showError: true,
+        err
+      }
+
+    case types.CLOSE_REGISTER_STEP_SUCCESS:
+      return {
+        ...state,
+        ...payload
+      }
+
+    case types.CLOSE_REGISTER_STEP_FAILED:
+      return {
+        ...state,
+        showError: true,
+        err
+      }
+
+    case types.SHOW_LOCK_SCREEN_SUCCESS:
+      return {
+        ...state,
+        ...payload
+      }
+
+    case types.SHOW_LOCK_SCREEN_FAILED:
+      return {
+        ...state,
+        showError: true,
+        err
+      }
+
+    case types.CLOSE_LOCK_SCREEN_SUCCESS:
+      return {
+        ...state,
+        ...payload
+      }
+
+    case types.CLOSE_LOCK_SCREEN_FAILED:
+      return {
+        ...state,
+        showError: true,
+        err
+      }
     default:
       return state
   }
