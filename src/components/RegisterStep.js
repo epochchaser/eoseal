@@ -19,6 +19,8 @@ import crypto from 'crypto'
 import cryptojs from 'crypto-js'
 import * as EosPortal from '../utils/EosPortal'
 
+const N = 123948
+
 const RegisterRoot = styled(
   posed.div({
     visible: { y: '0%', scale: 1, opacity: 1 },
@@ -122,7 +124,7 @@ class RegisterStep extends Component {
 
     crypto.randomBytes(64, (err, buf) => {
       const saltTarget = buf.toString('base64')
-      crypto.pbkdf2(password, saltTarget, 123948, 64, 'sha512', (err, key) => {
+      crypto.pbkdf2(password, saltTarget, N, 64, 'sha512', (err, key) => {
         const base64Key = key.toString('base64')
         const ciphertext = cryptojs.AES.encrypt(privatekey, password)
 
@@ -181,7 +183,6 @@ class RegisterStep extends Component {
           }}
           axis={'x'}
           index={activeStep}
-          onChangeIndex={this.handleStepChange}
         >
           <Paper
             style={{
@@ -266,11 +267,30 @@ class RegisterStep extends Component {
             </FormControl>
           </Paper>
 
-          <Paper square elevation={0}>
+          <Paper
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              paddingLeft: '24px',
+              alignItems: 'center',
+              justifyContent: 'space-around',
+              paddingRight: '24px'
+            }}
+            square
+            elevation={0}
+          >
             <Typography variant="title">3. Choose your account</Typography>
-            <Typography variant="caption">{accountName}</Typography>
-            <Button disabled={accountName ? false : true} onClick={this.handleCompleted}>
-              성공
+            <Typography style={{ flexGrow: 1 }} variant="caption">
+              {accountName}
+            </Typography>
+            <Button
+              style={{ marginTop: '24px', marginBottom: '24px' }}
+              variant="contained"
+              color="primary"
+              disabled={accountName ? false : true}
+              onClick={this.handleCompleted}
+            >
+              Let's go!
             </Button>
           </Paper>
         </SwipeableViews>

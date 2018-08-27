@@ -206,8 +206,13 @@ function* fetchTokens(payload) {
       for (let i = 0; i < len; i++) {
         try {
           let token = yield call(EosService.getCurrencyBalance, eos, tempTokens[i])
-          const tokenized = token[0].split(' ')
-          tempTokens.filter(t => t.symbol === tokenized[1])[0].amount = Number(tokenized[0])
+
+          if (token.length === 0) {
+            tempTokens[i].amount = 0
+          } else {
+            const tokenized = token[0].split(' ')
+            tempTokens.filter(t => t.symbol === tokenized[1])[0].amount = Number(tokenized[0])
+          }
         } catch (e) {}
       }
 

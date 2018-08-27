@@ -172,11 +172,7 @@ class Home extends Component {
           {accountName &&
             tokens && (
               <Transfer
-                show={
-                  pageIndex === values.TRANSFER_PAGE_INDEX && tokens && tokens.length > 0
-                    ? 'visible'
-                    : 'collapse'
-                }
+                show={pageIndex === values.TRANSFER_PAGE_INDEX ? 'visible' : 'collapse'}
                 tokens={tokens}
                 getTokens={getTokens}
                 transferTokens={transferTokens}

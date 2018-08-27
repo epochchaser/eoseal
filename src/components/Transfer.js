@@ -18,6 +18,7 @@ import Snackbar from '@material-ui/core/Snackbar'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import * as EosPortal from '../utils/EosPortal'
 import Swal from 'sweetalert2'
+import InputAdornment from '@material-ui/core/InputAdornment'
 
 const Trans = styled(
   posed.div({
@@ -44,7 +45,8 @@ class Transfer extends Component {
   state = {
     token: 'EOS',
     recipient: '',
-    amount: 0,
+    amount: '',
+    available: '',
     memo: '',
     openSnackbar: false,
     vertical: 'top',
@@ -81,6 +83,15 @@ class Transfer extends Component {
   }
 
   handleChange = name => event => {
+    const { tokens } = this.props
+    if (name === 'token') {
+      const targetToken = tokens.filter(t => t.symbol === event.target.value)[0]
+
+      this.setState({
+        amountPlaceholder: `(max ${targetToken.amount})`
+      })
+    }
+
     this.setState({
       [name]: event.target.value
     })
@@ -109,7 +120,7 @@ class Transfer extends Component {
         message: 'Choose token to transfer!',
         openSnackbar: true
       })
-    } else if (amount <= 0) {
+    } else if (!amount || amount <= 0) {
       this.setState({
         message: 'Set valid amount!',
         openSnackbar: true
@@ -194,6 +205,7 @@ class Transfer extends Component {
       recipient,
       token,
       amount,
+      amountPlaceholder,
       transferInProgress
     } = this.state
 
@@ -248,7 +260,11 @@ class Transfer extends Component {
                       <TextField
                         id="Amount"
                         label="Amount"
-                        placeholder="Amount"
+                        placeholder={amountPlaceholder}
+                        type="number"
+                        InputProps={{
+                          endAdornment: <InputAdornment position="end">{token}</InputAdornment>
+                        }}
                         value={amount}
                         onChange={this.handleChange('amount')}
                         margin="normal"
