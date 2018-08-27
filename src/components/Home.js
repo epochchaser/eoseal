@@ -57,8 +57,10 @@ class Home extends Component {
     const pwdTarget = localStorage.getItem('pwdTarget')
     const saltTarget = localStorage.getItem('saltTarget')
     const cipherTarget = localStorage.getItem('cipher')
+    const accList = JSON.parse(localStorage.getItem('accList'))
+    const currAcc = localStorage.getItem('currAcc')
 
-    if (pwdTarget && saltTarget && cipherTarget) {
+    if (pwdTarget && saltTarget && cipherTarget && accList && currAcc) {
       showLockScreen()
     }
 
@@ -66,9 +68,17 @@ class Home extends Component {
   }
 
   loadAccountInfo = () => {
-    const { getAccountInfo, httpEndpoint, keyProvider, chainId, sign, broadcast } = this.props
+    const {
+      getAccountInfo,
+      accountName,
+      httpEndpoint,
+      keyProvider,
+      chainId,
+      sign,
+      broadcast
+    } = this.props
 
-    if (!keyProvider) return
+    if (!keyProvider || !accountName) return
 
     const publicKey = ecc.privateToPublic(keyProvider)
     const eos = EosPortal.getEOS({
@@ -79,11 +89,12 @@ class Home extends Component {
       broadcast
     })
 
-    getAccountInfo({ eos, public_key: publicKey })
+    getAccountInfo({ eos, accountName })
   }
 
   render() {
     const {
+      accountList,
       accountName,
       liquid,
       totalBalance,
@@ -100,9 +111,11 @@ class Home extends Component {
       broadcast,
       tokens,
       getAccountInfo,
+      getAccountList,
       showTransferView,
       showRegisterStep,
       updateEosProvider,
+      updateAccountName,
       closeRegisterStep,
       closeTransferView,
       closeLockScreen,
@@ -114,6 +127,8 @@ class Home extends Component {
     const pwdTarget = localStorage.getItem('pwdTarget')
     const saltTarget = localStorage.getItem('saltTarget')
     const cipherTarget = localStorage.getItem('cipher')
+    const accList = JSON.parse(localStorage.getItem('accList'))
+    const currAcc = localStorage.getItem('currAcc')
 
     return (
       <Fragment>
@@ -189,10 +204,13 @@ class Home extends Component {
 
           <RegisterStep
             show={pageIndex === values.REGISTER_STEP_INDEX ? 'visible' : 'collapse'}
+            accountList={accountList}
             accountName={accountName}
             getAccountInfo={getAccountInfo}
+            getAccountList={getAccountList}
             closeRegisterStep={closeRegisterStep}
             updateEosProvider={updateEosProvider}
+            updateAccountName={updateAccountName}
             loadAccountInfo={this.loadAccountInfo}
             httpEndpoint={httpEndpoint}
             keyProvider={keyProvider}
@@ -204,9 +222,12 @@ class Home extends Component {
           <LockScreen
             show={pageIndex === values.LOCK_SCREEN_INDEX ? 'visible' : 'collapse'}
             pwdTarget={pwdTarget}
+            accList={accList}
+            currAcc={currAcc}
             saltTarget={saltTarget}
             cipherTarget={cipherTarget}
             closeLockScreen={closeLockScreen}
+            updateAccountName={updateAccountName}
             updateEosProvider={updateEosProvider}
             loadAccountInfo={this.loadAccountInfo}
           />

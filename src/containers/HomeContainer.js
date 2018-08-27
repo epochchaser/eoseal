@@ -11,6 +11,7 @@ const mapStateToProps = state => {
     net_staked: state.accountInfo.net_staked,
     net_usage: state.accountInfo.net_usage,
     ram_usage: state.accountInfo.ram_usage,
+    accountList: state.accountInfo.accountList,
     accountName: state.accountInfo.accountName,
     pageIndex: state.pageTransitionInfo.pageIndex,
     tokens: state.tokenInfo.tokens,
@@ -24,6 +25,7 @@ const mapStateToProps = state => {
 }
 
 const mapDispatchToProps = dispatch => ({
+  getAccountList: payload => dispatch(actions.getAccountList(payload)),
   getAccountInfo: payload => dispatch(actions.getAccountInfo(payload)),
   refreshAccountInfo: payload => dispatch(actions.refreshAccountInfo(payload)),
   showTransferView: () => dispatch(actions.showTransferView()),
@@ -38,6 +40,9 @@ const mapDispatchToProps = dispatch => ({
   },
   updateEosProvider: options => {
     dispatch(actions.updateEosProvider(options))
+  },
+  updateAccountName: payload => {
+    dispatch(actions.updateAccountName(payload))
   }
 })
 

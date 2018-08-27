@@ -203,6 +203,7 @@ class Transfer extends Component {
       openSnackbar,
       message,
       recipient,
+      memo,
       token,
       amount,
       amountPlaceholder,
@@ -272,6 +273,17 @@ class Transfer extends Component {
                       />
                     </Grid>
                   </Grid>
+
+                  <FormControl fullWidth>
+                    <TextField
+                      id="Memo"
+                      label="Memo"
+                      placeholder="Memo"
+                      value={memo}
+                      onChange={this.handleChange('memo')}
+                      margin="normal"
+                    />
+                  </FormControl>
                 </Typography>
               </CardContent>
               <CardActions

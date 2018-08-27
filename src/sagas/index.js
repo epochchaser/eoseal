@@ -14,16 +14,30 @@ function removeDuplicates(arr, prop) {
   return newArr
 }
 
-function* fetchAccountInfo(payload) {
+function* fetchAccountList(payload) {
   try {
     const { eos, public_key } = payload.payload
-
+    if (!eos || !public_key) return
     const accounts = yield call(EosService.getKeyAccounts, eos, public_key)
+
     if (!accounts.account_names || accounts.account_names.length <= 0) {
       return
     }
 
-    const accountName = accounts.account_names[0]
+    const accountList = [...accounts.account_names]
+    yield put(
+      actions.getAccountListSuccess({ accountList, accountName: accounts.account_names[0] })
+    )
+  } catch (error) {
+    yield put(actions.getAccountListFailed(error))
+  }
+}
+
+function* fetchAccountInfo(payload) {
+  try {
+    const { eos, accountName } = payload.payload
+    if (!eos || !accountName) return
+
     const accountInfo = yield call(EosService.getAccountInfo, eos, accountName)
 
     if (accountInfo) {
@@ -85,7 +99,7 @@ function* fetchAccountInfo(payload) {
 function* refreshAccountInfo(payload) {
   try {
     const { eos, accountName } = payload.payload
-
+    if (!eos || !accountName) return
     const accountInfo = yield call(EosService.getAccountInfo, eos, accountName)
 
     if (accountInfo) {
@@ -147,7 +161,7 @@ function* refreshAccountInfo(payload) {
 function* fetchTokens(payload) {
   try {
     const { eos, accountName } = payload.payload
-
+    if (!eos || !accountName) return
     const lastAction = yield call(EosService.getActions, eos, accountName, -1, -1)
 
     let totalActions
@@ -184,6 +198,7 @@ function* fetchTokens(payload) {
               action.action_trace.act.data.to === accountName &&
               action.action_trace.act.data.quantity.split(' ')[1] !== 'EOS'
             ) {
+              console.log(action.action_trace)
               return true
             }
 
@@ -350,7 +365,18 @@ function* updateEosProvider(options) {
   }
 }
 
+function* updateAccountName(payload) {
+  const { accountName } = payload.payload
+
+  try {
+    yield put(actions.updateAccountNameSuccess({ accountName }))
+  } catch (error) {
+    yield put(actions.updateAccountNameFailed(error))
+  }
+}
+
 function* apiSaga() {
+  yield takeEvery(types.GET_ACCOUNT_LIST, fetchAccountList)
   yield takeEvery(types.GET_ACCOUNT_INFO, fetchAccountInfo)
   yield takeEvery(types.REFRESH_ACCOUNT_INFO, refreshAccountInfo)
   yield takeEvery(types.SHOW_TRANSFER_VIEW, showTransferView)
@@ -362,6 +388,7 @@ function* apiSaga() {
   yield takeEvery(types.GET_TOKENS, fetchTokens)
   yield takeEvery(types.TRANSFER_TOKENS, transferTokens)
   yield takeEvery(types.UPDATE_EOS_PROVIDER, updateEosProvider)
+  yield takeEvery(types.UPDATE_ACCOUNT_NAME, updateAccountName)
 }
 
 export default apiSaga

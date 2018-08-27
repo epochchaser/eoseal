@@ -1,5 +1,17 @@
 import * as types from './ActionTypes'
 
+export const getAccountList = payload => {
+  return { type: types.GET_ACCOUNT_LIST, payload }
+}
+
+export const getAccountListSuccess = accountInfo => {
+  return { type: types.GET_ACCOUNT_LIST_SUCCESS, payload: accountInfo }
+}
+
+export const getAccountListFailed = err => {
+  return { type: types.GET_ACCOUNT_LIST_FAILED, payload: err }
+}
+
 export const getAccountInfo = payload => {
   return { type: types.GET_ACCOUNT_INFO, payload }
 }
@@ -130,4 +142,16 @@ export const updateEosProviderSuccess = options => {
 
 export const updateEosProviderFailed = err => {
   return { type: types.UPDATE_EOS_PROVIDER_FAILED, payload: err }
+}
+
+export const updateAccountName = payload => {
+  return { type: types.UPDATE_ACCOUNT_NAME, payload: payload }
+}
+
+export const updateAccountNameSuccess = payload => {
+  return { type: types.UPDATE_ACCOUNT_NAME_SUCCESS, payload: payload }
+}
+
+export const updateAccountNameFailed = err => {
+  return { type: types.UPDATE_ACCOUNT_NAME_FAILED, payload: err }
 }

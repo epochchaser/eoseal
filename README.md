@@ -8,16 +8,16 @@ Crypto algorithm : pbkdf2 + AES
 
 ## Transfer
 
-![Home](./readme/eoseal_transfer.png)
+![Transfer](./readme/eoseal_transfer.png)
 
 ## Register 1
 
-![Home](./readme/eoseal_register_1.png)
+![Register 1](./readme/eoseal_register_1.png)
 
 ## Register 2
 
-![Home](./readme/eoseal_register_2.png)
+![Register 2](./readme/eoseal_register_2.png)
 
 ## Register 3
 
-![Home](./readme/eoseal_register_3.png)
+![Register 3](./readme/eoseal_register_3.png)

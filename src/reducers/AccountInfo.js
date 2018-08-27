@@ -8,11 +8,24 @@ const initialState = {
   net_staked: 0,
   net_usage: 0,
   ram_usage: 0,
+  accountList: [],
   accountName: ''
 }
 
 const AccountInfo = (state = initialState, { type, payload, err }) => {
   switch (type) {
+    case types.GET_ACCOUNT_LIST_SUCCESS:
+      return {
+        ...state,
+        ...payload
+      }
+    case types.GET_ACCOUNT_LIST_FAILED:
+      return {
+        ...state,
+        showError: true,
+        err
+      }
+
     case types.GET_ACCOUNT_INFO_SUCCESS:
       return {
         ...state,
@@ -32,6 +45,19 @@ const AccountInfo = (state = initialState, { type, payload, err }) => {
       }
 
     case types.REFRESH_ACCOUNT_INFO_FAILED:
+      return {
+        ...state,
+        showError: true,
+        err
+      }
+
+    case types.UPDATE_ACCOUNT_NAME_SUCCESS:
+      return {
+        ...state,
+        ...payload
+      }
+
+    case types.UPDATE_ACCOUNT_NAME_FAILED:
       return {
         ...state,
         showError: true,

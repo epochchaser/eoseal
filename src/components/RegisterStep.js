@@ -14,6 +14,7 @@ import IconButton from '@material-ui/core/IconButton'
 import CloseIcon from '@material-ui/icons/Close'
 import { TextField } from '@material-ui/core'
 import FormControl from '@material-ui/core/FormControl'
+import MenuItem from '@material-ui/core/MenuItem'
 import ecc from 'eosjs-ecc'
 import crypto from 'crypto'
 import cryptojs from 'crypto-js'
@@ -51,27 +52,32 @@ class RegisterStep extends Component {
     vertical: 'top',
     horizontal: 'right',
     message: '',
+    nextButtonText: 'Next',
     showError: false
   }
 
   handleNext = () => {
     const { activeStep, password, password_again, privatekey } = this.state
-    const { getAccountInfo, httpEndpoint, keyProvider, chainId, sign, broadcast } = this.props
+    const { getAccountList, httpEndpoint, keyProvider, chainId, sign, broadcast } = this.props
 
     if (0 === activeStep) {
       if (password.length < 8) {
         this.setState({
           showError: true,
+          nextButtonText: 'Next',
           message: 'More than 8length.'
         })
       } else if (password !== password_again) {
         this.setState({
           showError: true,
+          nextButtonText: 'Next',
           message: 'Need to match password.'
         })
       } else {
         this.setState({
           activeStep: activeStep + 1,
+          nextButtonText: 'Next',
+          message: '',
           showError: false
         })
       }
@@ -86,10 +92,12 @@ class RegisterStep extends Component {
           broadcast
         })
 
-        getAccountInfo({ eos, public_key: publicKey })
+        getAccountList({ eos, public_key: publicKey })
 
         this.setState({
           activeStep: activeStep + 1,
+          nextButtonText: 'Done',
+          message: '',
           showError: false
         })
       } else {
@@ -99,12 +107,16 @@ class RegisterStep extends Component {
         })
       }
     } else if (2 === activeStep) {
+      this.handleCompleted()
     }
   }
 
   handleBack = () => {
     this.setState(prevState => ({
-      activeStep: prevState.activeStep - 1
+      activeStep: prevState.activeStep - 1,
+      message: '',
+      showError: false,
+      nextButtonText: 'Next'
     }))
   }
 
@@ -113,6 +125,12 @@ class RegisterStep extends Component {
   }
 
   handleChange = name => event => {
+    const { updateAccountName } = this.props
+
+    if (name === 'accountName') {
+      updateAccountName({ accountName: event.target.value })
+    }
+
     this.setState({
       [name]: event.target.value
     })
@@ -120,7 +138,7 @@ class RegisterStep extends Component {
 
   handleCompleted = () => {
     const { password, privatekey } = this.state
-    const { updateEosProvider, loadAccountInfo } = this.props
+    const { updateEosProvider, loadAccountInfo, accountList, accountName } = this.props
 
     crypto.randomBytes(64, (err, buf) => {
       const saltTarget = buf.toString('base64')
@@ -134,6 +152,8 @@ class RegisterStep extends Component {
         localStorage.setItem('pwdTarget', base64Key)
         localStorage.setItem('saltTarget', saltTarget)
         localStorage.setItem('cipher', ciphertext.toString())
+        localStorage.setItem('accList', JSON.stringify(accountList))
+        localStorage.setItem('currAcc', accountName)
 
         updateEosProvider({ keyProvider: privatekey })
         loadAccountInfo()
@@ -152,14 +172,23 @@ class RegisterStep extends Component {
       password_again: '',
       privatekey: '',
       message: '',
+      nextButtonText: ' Next',
       showError: false
     })
   }
 
   render() {
     const maxSteps = 3
-    const { activeStep, message, showError, password, password_again, privatekey } = this.state
-    const { show, accountName } = this.props
+    const {
+      activeStep,
+      message,
+      showError,
+      password,
+      password_again,
+      privatekey,
+      nextButtonText
+    } = this.state
+    const { show, accountName, accountList } = this.props
 
     return (
       <RegisterRoot pose={show}>
@@ -280,18 +309,22 @@ class RegisterStep extends Component {
             elevation={0}
           >
             <Typography variant="title">3. Choose your account</Typography>
-            <Typography style={{ flexGrow: 1 }} variant="caption">
-              {accountName}
-            </Typography>
-            <Button
-              style={{ marginTop: '24px', marginBottom: '24px' }}
-              variant="contained"
-              color="primary"
-              disabled={accountName ? false : true}
-              onClick={this.handleCompleted}
+
+            <TextField
+              id="select-account"
+              select
+              label="Account"
+              value={accountName}
+              onChange={this.handleChange('accountName')}
+              margin="normal"
+              fullWidth
             >
-              Let's go!
-            </Button>
+              {accountList.map((a, i) => (
+                <MenuItem key={i} value={a}>
+                  {a}
+                </MenuItem>
+              ))}
+            </TextField>
           </Paper>
         </SwipeableViews>
 
@@ -301,8 +334,14 @@ class RegisterStep extends Component {
           position="static"
           activeStep={activeStep}
           nextButton={
-            <Button size="small" onClick={this.handleNext} disabled={activeStep === maxSteps - 1}>
-              Next
+            <Button
+              size="small"
+              onClick={this.handleNext}
+              variant={activeStep === 2 ? (accountName ? 'contained' : 'flat') : 'flat'}
+              color={activeStep === 2 ? (accountName ? 'primary' : 'default') : 'default'}
+              disabled={activeStep === 2 ? !accountName : false}
+            >
+              {nextButtonText}
               <KeyboardArrowRight />
             </Button>
           }

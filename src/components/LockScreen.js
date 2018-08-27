@@ -51,9 +51,18 @@ class LockScreen extends Component {
 
   handleVerification = () => {
     const { password } = this.state
-    const { pwdTarget, saltTarget, cipherTarget, updateEosProvider, loadAccountInfo } = this.props
+    const {
+      pwdTarget,
+      saltTarget,
+      cipherTarget,
+      accList,
+      currAcc,
+      updateEosProvider,
+      updateAccountName,
+      loadAccountInfo
+    } = this.props
 
-    if (password && pwdTarget && saltTarget && cipherTarget) {
+    if (password && pwdTarget && saltTarget && cipherTarget && accList && currAcc) {
       crypto.pbkdf2(password, saltTarget, 123948, 64, 'sha512', (err, key) => {
         const base64Key = key.toString('base64')
 
@@ -61,6 +70,7 @@ class LockScreen extends Component {
           var bytes = cryptojs.AES.decrypt(cipherTarget, password)
           var plaintext = bytes.toString(cryptojs.enc.Utf8)
           updateEosProvider({ keyProvider: plaintext })
+          updateAccountName({ accountName: currAcc })
           loadAccountInfo()
           this.handleClose()
         } else {
