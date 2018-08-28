@@ -10,6 +10,10 @@ Crypto algorithm : pbkdf2 + AES
 
 ![Transfer](./readme/eoseal_transfer.png)
 
+## Unlock
+
+![Unlock](./readme/eoseal_unlock.png)
+
 ## Register 1
 
 ![Register 1](./readme/eoseal_register_1.png)

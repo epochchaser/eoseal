@@ -56,6 +56,28 @@ class RegisterStep extends Component {
     showError: false
   }
 
+  getSnapshotBeforeUpdate(prevProps, prevState) {
+    const { activeStep } = prevState
+    return {
+      activeStep
+    }
+  }
+
+  componentDidUpdate = (prevProps, prevState, snapshot) => {
+    if (snapshot) {
+      const prevActiveStep = prevState.activeStep
+      const { activeStep } = this.state
+
+      if (prevActiveStep !== activeStep) {
+        if (0 === activeStep) {
+          document.querySelector('#password').focus()
+        } else if (1 === activeStep) {
+          document.querySelector('#privatekey').focus()
+        }
+      }
+    }
+  }
+
   handleNext = () => {
     const { activeStep, password, password_again, privatekey } = this.state
     const { getAccountList, httpEndpoint, keyProvider, chainId, sign, broadcast } = this.props
@@ -194,7 +216,11 @@ class RegisterStep extends Component {
       <RegisterRoot pose={show}>
         <AppBar position="static" color="default">
           <Toolbar>
-            <IconButton color="inherit" onClick={this.handleClose}>
+            <IconButton
+              color="inherit"
+              onClick={this.handleClose}
+              disabled={show === 'collapse' ? true : false}
+            >
               <CloseIcon />
             </IconButton>
 
@@ -244,7 +270,7 @@ class RegisterStep extends Component {
                 placeholder="Password"
                 margin="normal"
                 value={password}
-                autoFocus
+                disabled={show === 'collapse' ? true : false}
                 onChange={this.handleChange('password')}
               />
               <TextField
@@ -254,6 +280,7 @@ class RegisterStep extends Component {
                 placeholder="Password"
                 margin="normal"
                 value={password_again}
+                disabled={show === 'collapse' ? true : false}
                 onChange={this.handleChange('password_again')}
               />
             </FormControl>
@@ -290,7 +317,7 @@ class RegisterStep extends Component {
                 placeholder="Private key"
                 margin="normal"
                 value={privatekey}
-                autoFocus
+                disabled={show === 'collapse' ? true : false}
                 onChange={this.handleChange('privatekey')}
               />
             </FormControl>
@@ -315,6 +342,7 @@ class RegisterStep extends Component {
               select
               label="Account"
               value={accountName}
+              disabled={show === 'collapse' ? true : false}
               onChange={this.handleChange('accountName')}
               margin="normal"
               fullWidth

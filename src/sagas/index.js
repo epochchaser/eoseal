@@ -198,7 +198,6 @@ function* fetchTokens(payload) {
               action.action_trace.act.data.to === accountName &&
               action.action_trace.act.data.quantity.split(' ')[1] !== 'EOS'
             ) {
-              console.log(action.action_trace)
               return true
             }
 

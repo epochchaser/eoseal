@@ -8,10 +8,8 @@ import DeleteForeverIcon from '@material-ui/icons/DeleteForever'
 import DoneIcon from '@material-ui/icons/Done'
 import { TextField, Button } from '@material-ui/core'
 import FormControl from '@material-ui/core/FormControl'
-import ecc from 'eosjs-ecc'
 import crypto from 'crypto'
 import cryptojs from 'crypto-js'
-import * as EosPortal from '../utils/EosPortal'
 
 const LockScreenRoot = styled(
   posed.div({
@@ -41,6 +39,12 @@ class LockScreen extends Component {
     this.state = {
       password: ''
     }
+  }
+
+  componentDidMount = () => {
+    setTimeout(() => {
+      document.querySelector('#lock_password').focus()
+    }, 300)
   }
 
   handleChange = name => event => {
@@ -99,12 +103,20 @@ class LockScreen extends Component {
     this.handleClose()
   }
 
+  handleKeyDown = e => {
+    if (e.keyCode === 13) {
+      this.handleVerification()
+    } else if (e.keyCode === 9) {
+      e.preventDefault()
+    }
+  }
+
   render() {
     const { password } = this.state
     const { show } = this.props
 
     return (
-      <LockScreenRoot pose={show}>
+      <LockScreenRoot pose={show} onKeyDown={this.handleKeyDown}>
         <AppBar position="static" color="default">
           <Toolbar>
             <Typography variant="title" color="inherit">
@@ -129,13 +141,13 @@ class LockScreen extends Component {
           <FormControl fullWidth>
             <TextField
               style={{ marginLeft: '24px', marginRight: '24px' }}
-              id="password"
+              id="lock_password"
               type="password"
               label="Password"
               placeholder="Password"
               margin="normal"
               value={password}
-              autoFocus={true}
+              disabled={show === 'collapse' ? true : false}
               onChange={this.handleChange('password')}
             />
           </FormControl>
@@ -146,6 +158,7 @@ class LockScreen extends Component {
             style={{ marginLeft: '16px', marginBottom: '16px' }}
             variant="fab"
             color="secondary"
+            disabled={show === 'collapse' ? true : false}
             onClick={this.handleReset}
           >
             <DeleteForeverIcon />
@@ -154,6 +167,7 @@ class LockScreen extends Component {
             style={{ marginRight: '16px', marginBottom: '16px' }}
             variant="fab"
             color="primary"
+            disabled={show === 'collapse' ? true : false}
             onClick={this.handleVerification}
           >
             <DoneIcon />
