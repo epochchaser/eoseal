@@ -2,7 +2,7 @@
   "name": "Eoseal",
   "version": "1.0",
   "description": "EOS wallet!",
-  "permissions": ["tabs", "activeTab", "declarativeContent", "storage", "<all_urls>"],
+  "permissions": ["storage"],
   "background": {
     "scripts": ["background.js"],
     "persistent": false
